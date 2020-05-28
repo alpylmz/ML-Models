@@ -8,6 +8,7 @@ Matrix::Matrix(){
 Matrix::Matrix(long column_size,long row_size){
     _column_size=column_size;
     _row_size=row_size;
+
     _matrix.resize(_row_size);
     for(int i=0;i<_row_size;i++){
         _matrix[i].resize(_column_size);
@@ -15,14 +16,14 @@ Matrix::Matrix(long column_size,long row_size){
 }
 
 Matrix::Matrix(long size){
-    _matrix.resize(size);
     _column_size=size;
     _row_size=size;
 
-    for(int i=0;i<_matrix.size();i++){
+    _matrix.resize(size);
+    for(int i=0;i<_matrix.size();i++)
         _matrix[i].resize(size);
-    }
 
+    //Constructing identity matrix
     for(int i=0;i<size;i++){
         for(int j=0;j<size;j++){
             if(i==j)
@@ -53,9 +54,8 @@ Matrix Matrix::operator+(const Matrix& rhs){
     if(_column_size!=rhs._column_size || _row_size!=rhs._row_size){
         throw MatrixSize();
     }
+
     Matrix new_one(_matrix);
-    new_one._column_size=_column_size;
-    new_one._row_size=_row_size;
 
     for(int i=0;i<_row_size;i++){
         for(int j=0;j<_column_size;j++){
@@ -67,8 +67,6 @@ Matrix Matrix::operator+(const Matrix& rhs){
 
 Matrix Matrix::operator+(double val){
     Matrix new_one(_matrix);
-    new_one._column_size=_column_size;
-    new_one._row_size=_row_size;
 
     for(int i=0;i<_row_size;i++){
         for(int j=0;j<_column_size;j++){
@@ -80,21 +78,11 @@ Matrix Matrix::operator+(double val){
 }
 
 Matrix Matrix::operator*(const Matrix& rhs){
-    if(_column_size!=rhs._row_size){
+    if(_column_size!=rhs._row_size)
         throw MatrixSize();
-    }
-    Matrix new_one(rhs._column_size,_row_size);
-    //new_one._row_size=_row_size;
-    //new_one._column_size=rhs._column_size;
 
-    //new_one._matrix.resize(_row_size);
-    /*for(int i=0;i<_row_size;i++){
-        new_one._matrix[i].resize(_column_size);
-        for(int j=0;j<rhs._column_size;j++){
-            new_one._matrix[i][j]=0;
-        }
-    }
-    */
+    Matrix new_one(rhs._column_size,_row_size);
+    
     for(int i=0;i<_row_size;i++){
         for(int j=0;j<rhs._column_size;j++){
             for(int k=0;k<_column_size;k++){
@@ -126,16 +114,21 @@ std::vector<double> Matrix::operator[](long x){
 }
 
 Matrix Matrix::Transpose(){
+    //Creating a new vector to take transpose
     std::vector<std::vector<double>> new_matrix;
     new_matrix.resize(_column_size);
     for(int i=0;i<_column_size;i++){
         new_matrix[i].resize(_row_size);
     }
+
+    // Assigning values for new matrix
     for(int i=0;i<_row_size;i++){
         for(int j=0;j<_column_size;j++){
             new_matrix[j][i]=_matrix[i][j];
         }
     }
+
+    //Constructing new matrix from the vector
     Matrix result(new_matrix);
     return result;
 }
@@ -144,10 +137,12 @@ Matrix Matrix::Minor(long x, long y){
     //x is row, y is column
     Matrix new_matrix(_matrix);
 
+    //Deleting the unwanted parts
     new_matrix._matrix.erase(new_matrix._matrix.begin()+x);
     for(int i=0;i<new_matrix._matrix.size();i++){
         new_matrix._matrix[i].erase(new_matrix._matrix[i].begin()+y);
     }
+
     new_matrix._column_size--;
     new_matrix._row_size--;
     return new_matrix;
@@ -171,22 +166,22 @@ double Matrix::Determinant(){
 
 Matrix Matrix::Inverse(){
     if(_column_size==1 && _row_size==1){
+        // Creating a 1x1 matrix and the only value is 1/_matrix[0][0]
         Matrix x(1,1);
         x._matrix[0][0]=1/_matrix[0][0];
         return x;
     }
 
-    std::vector<std::vector<double>> cofactor_matrix;
+    double det=Determinant();
+    if(det==0)
+        throw DoNotHaveInverseError();
     
+    std::vector<std::vector<double>> cofactor_matrix;
     cofactor_matrix.resize(_row_size);
     for(int i=0;i<_row_size;i++){
         cofactor_matrix[i].resize(_column_size);
     }
 
-    double det=Determinant();
-    if(det==0){
-        throw DoNotHaveInverseError();
-    }
     for(int i=0;i<_row_size;i++){
         for(int j=0;j<_column_size;j++){
             cofactor_matrix[i][j]=Minor(i,j).Determinant();

@@ -4,11 +4,13 @@ Linear_Regression::Linear_Regression(Matrix data, Matrix results,std::string mod
     Matrix transformed_data;
     _model_name=model_name;
 
+    // Transforms the data accordingly
     if(model_name=="x")
         transformed_data=Allx(data);
     else if(model_name=="polynomial")
         transformed_data=Polynomial(data);
 
+    // According to the regularization, find the weights
     if(regularization_term=="empty"){
         weights=((transformed_data.Transpose()*transformed_data).Inverse())*(transformed_data.Transpose())*results;
     }
@@ -48,4 +50,3 @@ Matrix Linear_Regression::Polynomial(Matrix x){
     }    
     return y;
 }
-
