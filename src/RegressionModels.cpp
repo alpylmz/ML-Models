@@ -1,34 +1,45 @@
+#include<utility>
+
 #include "RegressionModels.hpp"
 
-Linear_Regression::Linear_Regression(Matrix data, Matrix results,std::string model_name="polynomial",std::string regularization_term="empty"){
+
+using namespace Model;
+
+Linear_Regression::Linear_Regression(Matrix data, Matrix results,model_names model_name = model_names::polynomial, regularization reg = std::make_pair(regularization_type::empty, regularization_term {0} )){
     Matrix transformed_data;
     _model_name=model_name;
 
     // Transforms the data accordingly
-    if(model_name=="x")
+    if (model_name == model_names::x) {
         transformed_data=Allx(data);
-    else if(model_name=="polynomial")
+    } else if (model_name == model_names::polynomial) {
         transformed_data=Polynomial(data);
+    } else {
+        // Panic
+    }
+        
 
     // According to the regularization, find the weights
-    if(regularization_term=="empty"){
+    if (reg.first == regularization_type::empty) {
         weights=((transformed_data.Transpose()*transformed_data).Inverse())*(transformed_data.Transpose())*results;
     }
-    else{
-        long reg_term=std::stoi(regularization_term);
+    else if (reg.first == regularization_type::integer) {
+        long reg_term= reg.second.reg_int;
         Matrix temp=transformed_data.Transpose()*transformed_data;
         //assuming temp will be square matrix
         Matrix identity(temp.ColumnSize());
         identity=identity*reg_term;
         weights=((identity+temp).Inverse())*transformed_data.Transpose()*results;
+    } else {
+        // TODO: Regularization_type == real
     }
 }
 
 Matrix Linear_Regression::Predict(Matrix X){
     Matrix transformed_X;
-    if(_model_name=="x")
+    if (_model_name == model_names::x) {
         transformed_X=Allx(X);
-    else if(_model_name=="polynomial"){
+    } else if (_model_name == model_names::polynomial){
         transformed_X=Polynomial(X);
     }
     
