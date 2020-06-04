@@ -6,7 +6,7 @@ int main(){
 
     Matrix matrix1(data1);
     //TEST 1
-    Linear_Regression model1(matrix1,outputs1,Model::model_names::x,std::make_pair(Model::regularization_type::real,0));
+    Linear_Regression model1(matrix1,outputs1,Model::model_names::x,std::make_pair(Model::regularization_type::real,Model::regularization_term{0}));
     std::vector<std::vector<double>> x1={{100}};
     std::cout << model1.Predict(x1);
 }
