@@ -198,6 +198,17 @@ std::vector<std::vector<double>> Matrix::matris(){
     return _matrix;
 }
 
+
+double Matrix::Dot(Matrix x){
+    // There is no control if they are not vectors or not, this function directly computes dot product
+    // with using Matrix[0]
+    double sum=0;
+    for(int i=0;i<ColumnSize();i++){
+        sum+=_matrix[0][i]*x[0][i];
+    }
+    return sum;
+}
+
 std::ostream& operator<<(std::ostream& os, const Matrix& rhs){
     for(int i=0;i<rhs._row_size;i++){
         for(int j=0;j<rhs._column_size;j++){

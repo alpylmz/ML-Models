@@ -38,6 +38,8 @@ class Matrix{
 
         Matrix Minor(long x,long y);
 
+        double Dot(Matrix x);
+
         // Taking the inverse of a matrix
         // If determinant is 0, throws DoNotHaveInverseError()
         Matrix Inverse();
